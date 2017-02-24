@@ -32,6 +32,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+# Note about printing:
+#   We try to print to stdout for results of a command that may be useful to
+#   someone (or another program). Strictly informational text, or errors,
+#   should be printed to stderr.
+
+
 def run_show_config(args):
     """Show the current configuration"""
     # TODO Proposal: remove the "hidden" configuration. Only show config. If
@@ -80,7 +86,7 @@ def run_configure(args, skip_if_exists=False):
 
     # select the correct config defaults based on the backend
     print('Generating default configuration for backend {}'
-          .format(args.backend))
+          .format(args.backend), file=sys.stderr)
     conf['database'] = bigchaindb._database_map[args.backend]
 
     if not args.yes:
@@ -113,7 +119,7 @@ def run_configure(args, skip_if_exists=False):
 def run_export_my_pubkey(args):
     """Export this node's public key to standard output
     """
-    print('bigchaindb args = {}'.format(args))
+    print('bigchaindb args = {}'.format(args), file=sys.stderr)
     bigchaindb.config_utils.autoconfigure(filename=args.config, force=True)
     pubkey = bigchaindb.config['keypair']['public']
     if pubkey is not None:
@@ -238,7 +244,7 @@ def run_set_shards(args):
     try:
         set_shards(conn, shards=args.num_shards)
     except OperationError as e:
-        print(e)
+        print(e, file=sys.stderr)
 
 
 def run_set_replicas(args):
@@ -246,7 +252,7 @@ def run_set_replicas(args):
     try:
         set_replicas(conn, replicas=args.num_replicas)
     except OperationError as e:
-        print(e)
+        print(e, file=sys.stderr)
 
 
 def run_add_replicas(args):
@@ -257,7 +263,7 @@ def run_add_replicas(args):
     try:
         add_replicas(conn, args.replicas)
     except (OperationError, NotImplementedError) as e:
-        print(e)
+        print(e, file=sys.stderr)
     else:
         print('Added {} to the replicaset.'.format(args.replicas))
 
@@ -270,7 +276,7 @@ def run_remove_replicas(args):
     try:
         remove_replicas(conn, args.replicas)
     except (OperationError, NotImplementedError) as e:
-        print(e)
+        print(e, file=sys.stderr)
     else:
         print('Removed {} from the replicaset.'.format(args.replicas))
 
